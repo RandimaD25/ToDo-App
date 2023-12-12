@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { PostType } from "../models/post.interface";
+import { TodoType } from "../models/todo-interface";
 
 const instance = axios.create({
     baseURL: "http://localhost:3000.com/",
@@ -16,9 +16,9 @@ const requests = {
 };
 
 export const Post = {
-    getPost: (): Promise<PostType[]> => requests.get("posts"),
-    getAPost: (id: number): Promise<PostType> => requests.get(`posts/${id}`),
-    createPost: (post: PostType): Promise<PostType> => requests.post("posts", post),
-    updatePost: (post: PostType, id: number): Promise<PostType> => requests.put(`posts/${id}`, post),
+    getPost: (): Promise<TodoType[]> => requests.get("posts"),
+    getAPost: (id: number): Promise<TodoType> => requests.get(`posts/${id}`),
+    createPost: (post: TodoType): Promise<TodoType> => requests.post("posts", post),
+    updatePost: (post: TodoType, id: number): Promise<TodoType> => requests.put(`posts/${id}`, post),
     deletePost: (id: number): Promise<void> => requests.delete(`posts/${id}`),
 };
