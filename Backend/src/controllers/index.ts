@@ -1,6 +1,6 @@
-import express, { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-// import { todo } from "node:test";
+import express from "express";
+import {Request, Response } from "express";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const app = express();
 app.use(express.json());
@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000;
 
 const prisma = new PrismaClient();
 
+//create a todo
 export const createTodo = async function(req: Request, res: Response) {
   const {id, description} = req.body;
   try{
@@ -26,6 +27,7 @@ export const createTodo = async function(req: Request, res: Response) {
   }
 };
 
+//get all todos
 export const getTodo = async function (req: Request, res: Response){
     const getTodo = await prisma.todo.findMany({
       
@@ -33,105 +35,54 @@ export const getTodo = async function (req: Request, res: Response){
     res.json(getTodo)
 }
 
+//update a todo
 export const updateTodo = async function (req: Request, res: Response){
+  const todoId = parseInt(req.params.id,10);
+  const {flag,description} = req.body;
+  const parseFlag = JSON.parse(flag.toLowerCase())
+
   try {
     const updateTodo = await prisma.todo.update({
       where: {
-        id: 1,
+        id: todoId,
       },
       data: {
-      description: "Buy a notebook"
+      flag: parseFlag,
+      description:description
     }
-    });
-    res.json(updateTodo)
+    })  
+    res.json("Successfully updated");
   }
   catch (error) {
-    console.log(error);
-    res.status(500).json({error: "Internal server error"})
-    
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        console.log("Record to update does not exist.");
+        
+      }
+    } 
+    res.json(error);  
   }
 }
 
+//delete a todo
 export const deleteTodo = async function (req: Request, res: Response){
+  const todoID = parseInt(req.params.id);
+  console.log(todoID);
+  
   try{
       const deleteTodo = await prisma.todo.delete({
       where: {
-        id: 3,
+        id: todoID,
       },
     })
+    res.json("Successfully deleted");
   } 
   catch (error) {
-    console.log(error);
-    res.status(500).json({error: "Internal server error"})
-    
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025'){
+        console.log("Record to delete does not exist.");
+      }
+    }
+    res.json(error)
   }
 }
-
-// export const getTodo = async function (req: Request, res: Response) => {
-//   res.json({ message: "alive" });
-// };
-
-// export const createTodo = await prisma.todo.createOne({
-//     data: [
-//       {description: "Wash the car", flag: true},
-//       {description: "Clean the room", flag: false}
-//     ]
-//   })
-
-  // const updateTodo = await prisma.todo.update({
-  //   where: {
-  //     id: 1,
-  //   },
-  //   data: {
-  //     description: "Buy a notebook"
-  //   }
-  // })
-
-//   const deleteTodo = await prisma.todo.delete({
-//     where: {
-//       id: 3,
-//     },
-//   })
-
-//   res.json({
-//     data: getTodo,
-//   });
-// });
-
-// app.listen(port, () => {
-//   console.log(`Listening to requests on port ${port}`);
-// });
-
-// app.post("/todos", async (req, res) => {
-//   const todoDescription = req.body.description;
-//   const todoFlag = {
-//     flag: req.body.flag,
-//   };
-
-//   if(!todoDescription || !todoFlag.flag){
-//     return res
-//       .status(400)
-//       .json({message: "Either description or flag is missing"})
-//   }
-
-//   try{
-//     const message = "quote created successfully";
-//     const description = await prisma.todo.findFirst({
-//       where: {description: todoDescription},
-//     });
-
-//     if(!todo){
-//       await prisma.todo.create({
-//         data: {
-//           description: todoDescription
-//         }
-//       });
-//       console.log("Created description for an existing todo");
-//       return res.json({message});
-//       } 
-//     }
-//     catch (e) {
-//       console.error(e);
-//       return res.status(500).json({message: "Something went wrong"});
-//   }
-// })

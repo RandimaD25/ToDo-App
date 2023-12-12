@@ -2,13 +2,12 @@ import express from "express"
 import { createTodo, getTodo, updateTodo, deleteTodo } from "../controllers/index";
 
 const router = express.Router();
-console.log('randia asm');
 
 //routes
 router.post('/createTodo', createTodo);
 router.get('/getTodo', getTodo);
-router.delete('/deleteTodo', deleteTodo);
-router.put('/updateTodo', updateTodo);
+router.delete('/deleteTodo/:id', deleteTodo);
+router.put('/updateTodo/:id', updateTodo);
 
 
 export default router;
