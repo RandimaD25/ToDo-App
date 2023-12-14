@@ -1,38 +1,74 @@
-import './App.scss'
 import { Button } from 'react-bootstrap'
 import MyList from './components/MyList'
-import Axios from 'axios'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { getItems } from './services/getItems'
+import { createItems } from './services/createItems'
+import { deleteItems } from './services/deleteItem'
 
-function App() {
-  const [data, setData] = useState();
+interface TodoListDetails {
+  id: number;
+  description: string;
+  flag: boolean;
+}
 
-  const getData = async() => {
-    const response = await Axios.get("http://localhost:3000/getData");
-    setData(response.data);
-  }
+interface CreateTodoItemsRequest {
+  description: string;
+}
+
+const App = () => {
+  const [todoData, setTodo] = useState<Array<TodoType>>([]);
+  const [newTask, setNewTask] = useState<CreateTodoItemsRequest>({description:""});
 
   useEffect(() => {
-    getData()
+    getItems().then((result)=>{
+      console.log(result[0]);  
+      setTodo(result[0]);
+    });
   },[])
-  return (
-    <div>{data}</div>
-    // <>
-    //   <div className='p-4 m-3 rounded' style={{backgroundColor: "#DDF2FD"}}>
-    //     <h1 className='text-primary' style={{paddingBlock:"1rem", color: ""}}>
-    //       My Todo List
-    //     </h1>
-    //     <div className='d-flex gap-4 justify-content-center'>
-    //     <input type="text" className="form-control w-50" placeholder="Please enter a todo item..."></input>
-    //     <Button className='btn btn-primary'>Add</Button>
-    //     </div>
 
-    //     <div className='justify-content-center'>
-    //       <MyList/>
-    //     </div>
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setNewTask((prevTask) => ({
+    ...prevTask,
+    [event.target.name]: event.target.value,
+  }));
+};
+
+const handleClick = async (event: React.FormEvent) => {
+  event.preventDefault();
+  try {
+    await createItems(newTask);
+    setNewTask({description:""});
+    console.log(newTask)
+    const updatedItems = await getItems();
+    setTodo(updatedItems[0])
+    // getItems();
+  }
+  catch(error: any){
+    console.log('Error creating to-do item: ', error.message);
+    
+  }
+}
+
+  return (
+    <>
+      <div className='p-4 m-3 rounded' style={{backgroundColor: "#DDF2FD"}}>
+        <h1 className='text-primary' style={{paddingBlock:"1rem", color: "", textAlign:"center"}}>
+          My Todo List
+        </h1>
         
-    //   </div>
-    // </>
+        <form action="" onSubmit={handleClick} className='d-flex gap-4 justify-content-center'>
+          <input type="text" id="inputItem" name='description' className="form-control w-50" placeholder="Please enter a todo item..." onChange={handleChange}></input>
+          <Button className='btn btn-primary' type='submit'>Add</Button>
+        </form>
+        
+        <div className='justify-content-center'>
+          {todoData.map((todo: TodoType, id: number) => (
+            <MyList key={id} todo={todo}/>
+          ))}
+        </div>
+        
+      </div>
+    </>
   )
 }
 

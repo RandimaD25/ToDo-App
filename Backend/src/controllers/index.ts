@@ -4,7 +4,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const app = express();
 app.use(express.json());
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 const prisma = new PrismaClient();
 
@@ -29,10 +29,17 @@ export const createTodo = async function(req: Request, res: Response) {
 
 //get all todos
 export const getTodo = async function (req: Request, res: Response){
-    const getTodo = await prisma.todo.findMany({
-      
-    });
-    res.json(getTodo)
+    try {
+      const getTodo = await prisma.todo.findMany({
+        
+      });
+      res.json(getTodo);
+    } catch (error){
+      console.log(error);
+      res.status(500).json({error: "Internal server error"})
+    }
+    
+    // res.json(getTodo)
 }
 
 //update a todo
