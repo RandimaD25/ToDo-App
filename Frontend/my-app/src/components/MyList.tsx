@@ -2,29 +2,16 @@ import { Button } from 'react-bootstrap'
 import React, {useState} from 'react';
 import { deleteItems } from '../services/deleteItem';
 
+interface DeleteItemProps {
+    todo: TodoType;
+    onRemoveTodo: (todoID:number) => void;
+  }
 
+const MyList: React.FC<DeleteItemProps> = ({todo, onRemoveTodo}) => {
+    // const [deleteItems, setDelteItems] = useState<boolean>(false);
 
-interface Props {
-    todo: TodoType
-    // onDelete: (todoId: number) => void;
-}
-
-const MyList: React.FC<Props> = ({todo}) => {
-    const [todoItems, setTodoItems] = useState<Array<TodoType>>([]);
-    // const handleDeleteItem = () => {
-    //     onDelete(todo.id)
-    // }
-    const handleDeleteItem = async (todoId: number) => {
-        try {
-            await deleteItems(todoId);
-            setTodoItems((prevItems) =>
-                prevItems.filter((item) => item.id !== todoId)
-            );
-            console.log("Item deleted successfully");
-        } catch (error: any) {
-            console.log("Delete item error:", error.message);
-            
-        }
+    const onDelete = () => {
+        onRemoveTodo(todo.id);
     }
 
     return (
@@ -36,7 +23,7 @@ const MyList: React.FC<Props> = ({todo}) => {
                 {todo.description}
                     <div className='d-flex gap-4 align-items-right'>
                         <Button className='btn btn-success'>Done</Button>
-                        <Button className='btn btn-danger'>Delete</Button>
+                        <Button onClick={onDelete} className='btn btn-danger'>Delete</Button>
                     </div>
                 </div>  
             </li>  

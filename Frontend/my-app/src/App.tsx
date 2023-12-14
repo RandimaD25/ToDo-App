@@ -49,6 +49,20 @@ const handleClick = async (event: React.FormEvent) => {
   }
 }
 
+const handleDelete = async (todoId: number) => {
+  // let updatedTodos: Array<TodoListDetails> = todoData.filter(todoData => todoData.description != todoToRemove.description);
+  
+  // Use deleteItems function here
+  await deleteItems(todoId);
+  getItems().then((result)=>{
+    console.log(result[0]);  
+    setTodo(result[0]);
+  })
+  
+  // setTodo(updatedTodos);
+  // console.log(updatedTodos);
+}
+
   return (
     <>
       <div className='p-4 m-3 rounded' style={{backgroundColor: "#DDF2FD"}}>
@@ -63,7 +77,7 @@ const handleClick = async (event: React.FormEvent) => {
         
         <div className='justify-content-center'>
           {todoData.map((todo: TodoType, id: number) => (
-            <MyList key={id} todo={todo}/>
+            <MyList key={id} todo={todo} onRemoveTodo={handleDelete}/>
           ))}
         </div>
         
