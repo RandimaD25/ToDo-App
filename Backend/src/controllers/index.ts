@@ -46,7 +46,7 @@ export const getTodo = async function (req: Request, res: Response){
 export const updateTodo = async function (req: Request, res: Response){
   const todoId = parseInt(req.params.id,10);
   const {flag,description} = req.body;
-  const parseFlag = JSON.parse(flag.toLowerCase())
+  // const parseFlag = JSON.parse(flag.toLowerCase())
 
   try {
     const updateTodo = await prisma.todo.update({
@@ -54,7 +54,7 @@ export const updateTodo = async function (req: Request, res: Response){
         id: todoId,
       },
       data: {
-      flag: parseFlag,
+      flag:true,
       description:description
     }
     })  

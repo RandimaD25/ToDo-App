@@ -1,17 +1,20 @@
 import { Button } from 'react-bootstrap'
-import React, {useState} from 'react';
-import { deleteItems } from '../services/deleteItem';
 
-interface DeleteItemProps {
+interface ItemProps {
     todo: TodoType;
     onRemoveTodo: (todoID:number) => void;
+    onDoneTodo: (todoId: number) => void;
   }
 
-const MyList: React.FC<DeleteItemProps> = ({todo, onRemoveTodo}) => {
-    // const [deleteItems, setDelteItems] = useState<boolean>(false);
+const MyList: React.FC<ItemProps> = ({todo, onRemoveTodo, onDoneTodo}) => {
 
     const onDelete = () => {
         onRemoveTodo(todo.id);
+    }
+
+    const onDone = () => {
+        console.log("done"); 
+        onDoneTodo(todo.id);
     }
 
     return (
@@ -22,7 +25,8 @@ const MyList: React.FC<DeleteItemProps> = ({todo, onRemoveTodo}) => {
                 <div className='d-flex mt-4 gap-4' style={{display:"flex", justifyContent: "space-between"}}>
                 {todo.description}
                     <div className='d-flex gap-4 align-items-right'>
-                        <Button className='btn btn-success'>Done</Button>
+                        <Button onClick={onDone} className='btn btn-success' hidden={todo.flag===true}>Done</Button>
+                    
                         <Button onClick={onDelete} className='btn btn-danger'>Delete</Button>
                     </div>
                 </div>  
