@@ -14,4 +14,14 @@ model Todo{
   id        Int      @id @default(autoincrement())
   description String 
   flag Boolean @default(false)
+  user   User    @relation(fields: [userId], references: [userId])
+  userId    Int 
+}
+
+model User{
+  userId   Int   @id @default(autoincrement())
+  name    String
+  emailAddress   String  @unique
+  password    String 
+  todos   Todo[]
 }

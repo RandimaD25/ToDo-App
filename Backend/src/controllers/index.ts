@@ -1,51 +1,51 @@
 import express from "express";
-import {Request, Response } from "express";
+import { Request, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 
-const app = express();
-app.use(express.json());
 const port = process.env.PORT || 3001;
-
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const route = express.Router();
 const prisma = new PrismaClient();
+const app = express();
+
+app.use(express.json());
 
 //create a todo
-export const createTodo = async function(req: Request, res: Response) {
-  const {id, description} = req.body;
-  try{
+export const createTodo = async function (req: Request, res: Response) {
+  const { id, description, userId } = req.body;
+  try {
     const newTodo = await prisma.todo.create({
       data: {
-        id, 
+        userId,
+        id,
         description,
       },
     });
-    res.json(newTodo)
-  }
-  catch (error) {
+    res.json(newTodo);
+  } catch (error) {
     console.log(error);
-    res.status(500).json({error: "Internal server error"})
-    
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 //get all todos
-export const getTodo = async function (req: Request, res: Response){
-    try {
-      const getTodo = await prisma.todo.findMany({
-        
-      });
-      res.json(getTodo);
-    } catch (error){
-      console.log(error);
-      res.status(500).json({error: "Internal server error"})
-    }
-    
-    // res.json(getTodo)
-}
+export const getTodo = async function (req: Request, res: Response) {
+  try {
+    const getTodo = await prisma.todo.findMany({});
+    res.json(getTodo);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
+  // res.json(getTodo)
+};
 
 //update a todo
-export const updateTodo = async function (req: Request, res: Response){
-  const todoId = parseInt(req.params.id,10);
-  const {flag,description} = req.body;
+export const updateTodo = async function (req: Request, res: Response) {
+  const todoId = parseInt(req.params.id, 10);
+  const { flag, description } = req.body;
   // const parseFlag = JSON.parse(flag.toLowerCase())
 
   try {
@@ -54,42 +54,147 @@ export const updateTodo = async function (req: Request, res: Response){
         id: todoId,
       },
       data: {
-      flag:true,
-      description:description
-    }
-    })  
+        flag: true,
+        description: description,
+      },
+    });
     res.json("Successfully updated");
-  }
-  catch (error) {
+  } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025') {
+      if (error.code === "P2025") {
         console.log("Record to update does not exist.");
-        
       }
-    } 
-    res.json(error);  
+    }
+    res.json(error);
   }
-}
+};
 
 //delete a todo
-export const deleteTodo = async function (req: Request, res: Response){
+export const deleteTodo = async function (req: Request, res: Response) {
   const todoID = parseInt(req.params.id);
   console.log(todoID);
-  
-  try{
-      const deleteTodo = await prisma.todo.delete({
+
+  try {
+    const deleteTodo = await prisma.todo.delete({
       where: {
         id: todoID,
       },
-    })
+    });
     res.json("Successfully deleted");
-  } 
-  catch (error) {
+  } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025'){
+      if (error.code === "P2025") {
         console.log("Record to delete does not exist.");
       }
     }
-    res.json(error)
+    res.json(error);
   }
-}
+};
+
+//generate token
+export const generateToken = function (userId: number) {
+  let jwtSecretKey = process.env.JWT_SECRET_KEY;
+  let data = {
+    userId: userId,
+    time: Date()
+  };
+
+  const token = jwt.sign(data, jwtSecretKey);
+  return token;
+};
+
+//validate token
+export const validateToken = function (req: Request, res: Response) {
+  let tokenHeaderKey: string | any = process.env.TOKEN_HEADER_KEY;
+  let jwtSecretKey = process.env.JWT_SECRET_KEY;
+  let error: any;
+
+  try {
+    const token = req.header(tokenHeaderKey);
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    if (verified) {
+      return res.send("Successfully Verified");
+    } else {
+      return res.status(401).send(error);
+    }
+  } catch (error: any) {
+    return res.status(401).send(error);
+  }
+};
+
+//user registration
+export const userRegistration = async function (req: Request, res: Response) {
+  try {
+    const { name, emailAddress, password } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashPassword;
+
+    const userExist = await prisma.user.findUnique({
+      where: { emailAddress: req.body.emailAddress },
+    });
+
+    if (!name || !emailAddress || !password) {
+      return res.json({ message: "Please enter all the details" });
+    }
+
+    if (userExist) {
+      return res.json({
+        message: "User already exists with the given email address",
+      });
+    }
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        emailAddress,
+        password: hashPassword,
+      },
+    });
+
+    const token =  generateToken(newUser.userId);
+  
+    res.json({
+      success: true,
+      message: "User registered successfully",
+      data: newUser,
+      token: token,
+    });
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error });
+  }
+};
+
+//user login
+export const userLogin = async function (req: Request, res: Response) {
+  try {
+    const { emailAddress, password } = req.body;
+    if (!emailAddress || !password) {
+      return res.json({ message: "Please enter all details" });
+    }
+
+    const userExist = await prisma.user.findUnique({
+      where: { emailAddress: req.body.emailAddress },
+    });
+    if (!userExist) {
+      return res.json({ message: "Wrong credentials" });
+    }
+
+    const isPasswordMatched = await bcrypt.compare(
+      password,
+      userExist.password
+    );
+    if (!isPasswordMatched) {
+      return res.json({ message: "Wrong credentials pass" });
+    }
+
+    return res.json({
+      data: emailAddress,
+      message: "LoggedIn successfully",
+    });
+  } catch (error) {
+    return res.json({ error: error });
+  }
+};
