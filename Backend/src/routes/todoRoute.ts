@@ -4,17 +4,16 @@ import {
     getTodo, 
     updateTodo, 
     deleteTodo, 
-    // generateToken, 
-    // validateToken,
     userRegistration,
-    userLogin
+    userLogin,
+    validateToken
 } from "../controllers/index";
 
 const router = express.Router();
 
 //routes
 router.post('/createTodo', createTodo);
-router.get('/getTodo', getTodo);
+router.get('/getTodo',validateToken, getTodo);
 router.delete('/deleteTodo/:id', deleteTodo);
 router.put('/updateTodo/:id', updateTodo);
 router.post('/register', userRegistration);

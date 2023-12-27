@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import { Request, Response } from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 
@@ -32,11 +32,19 @@ export const createTodo = async function (req: Request, res: Response) {
 //get all todos
 export const getTodo = async function (req: Request, res: Response) {
   try {
-    const getTodo = await prisma.todo.findMany({});
-    res.json(getTodo);
+    const user = (req as any).user as {userId: number} | undefined;
+    if (!user) {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
+    const userId = user.userId;
+    const todos = await prisma.todo.findMany({where: {userId: userId}})
+    console.log("get todo: ", todos);
+    
+    return res.json(todos);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 
   // res.json(getTodo)
@@ -104,16 +112,35 @@ export const generateToken = function (userId: number) {
 };
 
 //validate token
-export const validateToken = function (req: Request, res: Response) {
-  let tokenHeaderKey: string | any = process.env.TOKEN_HEADER_KEY;
+export const validateToken = function (req: Request, res: Response, next: NextFunction) {
+  let tokenHeaderKey = "Authorization";
   let jwtSecretKey = process.env.JWT_SECRET_KEY;
   let error: any;
 
   try {
-    const token = req.header(tokenHeaderKey);
+    const bearer = req.header(tokenHeaderKey);
+    console.log(bearer);
+    
+    if (!bearer || bearer==="") {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
+    const bearerParts = bearer.split(" ")
+    console.log(bearerParts);
+    
+    if (bearerParts.length !== 2) {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
+    const token = bearerParts[1]
+    console.log("token is: ", token);
+    
     const verified = jwt.verify(token, jwtSecretKey);
 
     if (verified) {
+      console.log(verified);
+      (req as any).user = { userId: verified.userId }
+      next();
       return res.send("Successfully Verified");
     } else {
       return res.status(401).send(error);
@@ -182,6 +209,9 @@ export const userLogin = async function (req: Request, res: Response) {
       return res.json({ message: "Wrong credentials" });
     }
 
+    console.log("user exist: ", userExist);
+    
+
     const isPasswordMatched = await bcrypt.compare(
       password,
       userExist.password
@@ -189,10 +219,13 @@ export const userLogin = async function (req: Request, res: Response) {
     if (!isPasswordMatched) {
       return res.json({ message: "Wrong credentials pass" });
     }
+    
+    const token =  generateToken(userExist.userId);
 
     return res.json({
       data: emailAddress,
       message: "LoggedIn successfully",
+      token: token,
     });
   } catch (error) {
     return res.json({ error: error });

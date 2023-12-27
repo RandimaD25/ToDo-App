@@ -1,98 +1,143 @@
 import loginImage from "../images/login-image.webp";
 import { Button } from "react-bootstrap";
-import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 
-const LoginPage = () => {
-  // const userRef = useRef<HTMLInputElement>();
-  // const errRef = useRef<HTMLParagraphElement>();
+import authService from "../services/auth/auth.service";
 
-  const [user, setUser] = useState("");
-  const [pwd, setPwd] = useState("");
-  const [errMsg, setErrMsg] = useState("");
-  const [success, setSuccess] = useState(false);
+const LoginPage: React.FC = () => {
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({
+    emailAddress: "",
+    password: "",
+  });
 
-  // useEffect(() => {
-  //   if (userRef.current) {
-  //     userRef.current.focus();
-  //   }
-  // }, []);
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   setErrMsg("");
-  // }, [user, pwd]);
+  const validateForm = () => {
+    let errors = {
+      emailAddress: "",
+      password: "",
+    };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    console.log(user, pwd);
-    setUser("");
-    setPwd("");
-    setSuccess(true);
+    if (!emailAddress) {
+      errors.emailAddress = "This fiels is required!";
+    }
+
+    if (!password) {
+      errors.password = "This field is required!";
+    }
+
+    return errors;
+  };
+
+  const handleLogin = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const errors = validateForm();
+
+    if (!errors.emailAddress && !errors.password) {
+      setMessage("");
+      setLoading(true);
+
+      authService.userLogin(emailAddress, password).then(
+        () => {
+          navigate(`/`);
+          window.location.reload();
+        },
+        (error) => {
+          const resMessage =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          setLoading(false);
+          setMessage(resMessage);
+        }
+      );
+    } else {
+      setErrors(errors);
+    }
   };
 
   return (
     <>
-      {success ? (
-        <section>
-          <h1>You are logged in!</h1>
-          <br />
-          <p>
-            <a href="#">Go to home</a>
-          </p>
-        </section>
-      ) : (
-        <div className="d-flex w-[45vw] items-center justify-center">
-          <img
-            src={loginImage}
-            alt="login-image"
-            className="col-md-6 img-fluid"
-          />
-          <div className="d-flex flex-column align-items-center justify-content-center bg-light p-4 rounded">
-            {/* <p
-              ref={errRef}
-              className={errMsg ? "errMsg" : "offscreen"}
-              aria-live="assertive"
-            >{errMsg}</p> */}
-            {/* <p ref={errRef} className={"errMsg ? "errMsg" : "offscreen"} aria-live="assertive>{errMsg}</p> */}
-            <h1 className="col text-primary">My Todo App</h1>
-            <h4 className="text-info">Welcome to My Todo List</h4>
-            <form onSubmit={handleSubmit} className="m-auto">
-              <div className="">
-                <label htmlFor="email" className="my-1">
-                  Email Addrerss
-                </label>
-                <input
-                  type="text"
-                  id="email"
-                  // ref={userRef}
-                  autoComplete="off"
-                  placeholder="Enter your Email Address"
-                  className="form-control w-100"
-                  onChange={(e) => setUser(e.target.value)}
-                  value={user}
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="my-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="Enter your Password"
-                  className="form-control w-100"
-                  onChange={(e) => setPwd(e.target.value)}
-                  value={pwd}
-                  required
-                />
-              </div>
-              <Button type="submit" className="mt-4 w-90">
-                Login
+      <div className="d-flex w-[45vw] items-center justify-center">
+        <img
+          src={loginImage}
+          alt="login-image"
+          className="col-md-6 img-fluid"
+        />
+        <div className="d-flex flex-column bg-light p-4 rounded justify-content-center align-items-center">
+          <h1 className="text-primary">My Todo App</h1>
+          <h4 className="text-info">Welcome to My Todo List</h4>
+
+          <form className="m-auto" onSubmit={handleLogin}>
+            <div className="form-group">
+              <label htmlFor="email" className="my-1">
+                Email Addrerss
+              </label>
+              <input
+                name="emailAddress"
+                type="text"
+                id="email"
+                value={emailAddress}
+                autoComplete="off"
+                placeholder="Enter your Email Address"
+                className={`form-control ${
+                  errors.emailAddress ? "is-invalid" : ""
+                } w-100`}
+                required
+                onChange={e => setEmailAddress(e.target.value)}
+              />
+              {errors.emailAddress && (
+                <div className="alert alert-danger">{errors.emailAddress}</div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="my-1">
+                Password
+              </label>
+              <input
+                name="password"
+                type="password"
+                autoComplete="off"
+                id="password"
+                placeholder="Enter your Password"
+                className={`form-control ${
+                  errors.password ? "is-invalid" : ""
+                } w-100`}
+                value={password}
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {errors.password && (
+                <div className="alert alert-danger">{errors.password}</div>
+              )}
+            </div>
+            <div className="form-group">
+              <Button type="submit" className="mt-4 w-90 align-items-center btn-block" disabled={loading}>
+                {loading && (
+                  <span className="spinner-border spinner-border-sm"></span>
+                )}
+                <span>Login</span>
               </Button>
-            </form>
-          </div>
+            </div>
+
+            {message && (
+              <div className="form-group">
+                <div className="alert alert-danger" role="alert">{message}</div>
+              </div>
+            )}
+          </form>
         </div>
-      )}
+      </div>
     </>
   );
 };
