@@ -12,10 +12,10 @@ import {
 const router = express.Router();
 
 //routes
-router.post('/createTodo', createTodo);
+router.post('/createTodo',validateToken, createTodo);
 router.get('/getTodo',validateToken, getTodo);
-router.delete('/deleteTodo/:id', deleteTodo);
-router.put('/updateTodo/:id', updateTodo);
+router.delete('/deleteTodo/:id',validateToken, deleteTodo);
+router.put('/updateTodo/:id',validateToken, updateTodo);
 router.post('/register', userRegistration);
 router.post('/login', userLogin);
 

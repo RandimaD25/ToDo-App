@@ -13,12 +13,16 @@ app.use(express.json());
 
 //create a todo
 export const createTodo = async function (req: Request, res: Response) {
-  const { id, description, userId } = req.body;
+  const { description } = req.body;
   try {
+    const user = (req as any).user as {userId: number} | undefined;
+    if (!user) {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
     const newTodo = await prisma.todo.create({
       data: {
-        userId,
-        id,
+        userId: user.userId,
         description,
       },
     });
@@ -38,7 +42,14 @@ export const getTodo = async function (req: Request, res: Response) {
     }
 
     const userId = user.userId;
-    const todos = await prisma.todo.findMany({where: {userId: userId}})
+    const todos = await prisma.todo.findMany({
+      where: {userId: userId},
+      select: {
+        id: true,
+        description: true,
+        flag: true,
+      }
+    })
     console.log("get todo: ", todos);
     
     return res.json(todos);
@@ -53,17 +64,20 @@ export const getTodo = async function (req: Request, res: Response) {
 //update a todo
 export const updateTodo = async function (req: Request, res: Response) {
   const todoId = parseInt(req.params.id, 10);
-  const { flag, description } = req.body;
-  // const parseFlag = JSON.parse(flag.toLowerCase())
 
   try {
-    const updateTodo = await prisma.todo.update({
+    const user = (req as any).user as {userId: number} | undefined;
+    if (!user) {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
+    await prisma.todo.update({
       where: {
         id: todoId,
+        userId: user.userId
       },
       data: {
         flag: true,
-        description: description,
       },
     });
     res.json("Successfully updated");
@@ -83,9 +97,15 @@ export const deleteTodo = async function (req: Request, res: Response) {
   console.log(todoID);
 
   try {
+    const user = (req as any).user as {userId: number} | undefined;
+    if (!user) {
+      return res.status(401).send({message: "Unauthenticated"})
+    }
+
     const deleteTodo = await prisma.todo.delete({
       where: {
         id: todoID,
+        userId: user.userId
       },
     });
     res.json("Successfully deleted");
@@ -141,7 +161,6 @@ export const validateToken = function (req: Request, res: Response, next: NextFu
       console.log(verified);
       (req as any).user = { userId: verified.userId }
       next();
-      return res.send("Successfully Verified");
     } else {
       return res.status(401).send(error);
     }

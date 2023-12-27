@@ -5,29 +5,31 @@ import { getItems } from "../services/getItems";
 import { createItems } from "../services/createItems";
 import { deleteItems } from "../services/deleteItem";
 import { doneItems } from "../services/doneItems";
-
-// interface TodoListDetails {
-//   id: number;
-//   description: string;
-//   flag: boolean;
-// }
+import { isAuthenticated } from "../utilities/is-authenticated";
+import { useNavigate } from "react-router-dom";
 
 interface CreateTodoItemsRequest {
   description: string;
 }
 
 const TodoPage = () => {
-  const [todoData, setTodo] = useState<Array<TodoType>>([]);
+  const [todoData, setTodoData] = useState<Array<TodoType>>([]);
   const [newTask, setNewTask] = useState<CreateTodoItemsRequest>({
     description: "",
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
     getItems().then((result) => {
-      console.log(result[0]);
-      setTodo(result[0]);
+      console.log(result);
+      setTodoData(result);
     });
-  }, []);
+  }, [navigate]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask((prevTask) => ({
@@ -43,7 +45,7 @@ const TodoPage = () => {
       setNewTask({ description: "" });
       console.log(newTask);
       const updatedItems = await getItems();
-      setTodo(updatedItems[0]);
+      setTodoData(updatedItems);
     } catch (error: any) {
       console.log("Error creating to-do item: ", error.message);
     }
@@ -52,29 +54,40 @@ const TodoPage = () => {
   const handleDelete = async (todoId: number) => {
     await deleteItems(todoId);
     getItems().then((result) => {
-      console.log(result[0]);
-      setTodo(result[0]);
+      console.log(result);
+      setTodoData(result);
     });
   };
 
   const handleDone = async (todoId: number) => {
     await doneItems(todoId, true);
-    setTodo((prevItems) =>
-    prevItems.map((item) =>
-      item.id === todoId ? { ...item, flag: true} : item
-    ));
+    setTodoData((prevItems) =>
+      prevItems.map((item) =>
+        item.id === todoId ? { ...item, flag: true } : item
+      )
+    );
     console.log("done");
-  }
+  };
+
+  const userLogout = async () => {
+    await localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   return (
     <>
       <div className="p-4 m-3 rounded" style={{ backgroundColor: "#DDF2FD" }}>
-        <h1
-          className="text-primary"
-          style={{ paddingBlock: "1rem", color: "", textAlign: "center" }}
-        >
-          My Todo List
-        </h1>
+        <div className="d-flex justify-content-between">
+          <div></div>{" "}
+          <h1 className="text-primary m-auto" style={{ paddingBlock: "1rem" }}>
+            My Todo List
+          </h1>
+          <div className="align-self-start">
+            <button className="btn btn-dark" onClick={userLogout}>
+              Logout
+            </button>
+          </div>
+        </div>
 
         <form
           action=""
@@ -96,7 +109,12 @@ const TodoPage = () => {
 
         <div className="justify-content-center">
           {todoData.map((todo: TodoType, id: number) => (
-            <MyList key={id} todo={todo} onRemoveTodo={handleDelete} onDoneTodo={handleDone} />
+            <MyList
+              key={id}
+              todo={todo}
+              onRemoveTodo={handleDelete}
+              onDoneTodo={handleDone}
+            />
           ))}
         </div>
       </div>

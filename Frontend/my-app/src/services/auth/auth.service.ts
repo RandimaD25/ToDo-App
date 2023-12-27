@@ -20,11 +20,8 @@ const userLogin = async (emailAddress: string, password: string) => {
     }) 
 }
 
-const userLogout = () => {
-  localStorage.removeItem("user");
-}
+
 
 export default {
   userLogin,
-  userLogout
 };
