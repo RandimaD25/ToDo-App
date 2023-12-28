@@ -67,7 +67,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex w-[45vw] items-center justify-center">
+      <div className="d-flex  align-items-center justify-content-center">
         <img
           src={loginImage}
           alt="login-image"
@@ -77,7 +77,7 @@ const LoginPage: React.FC = () => {
           <h1 className="text-primary">My Todo App</h1>
           <h4 className="text-info">Welcome to My Todo List</h4>
 
-          <form className="m-auto" onSubmit={handleLogin}>
+          <form className="m-auto w-100" onSubmit={handleLogin}>
             <div className="form-group">
               <label htmlFor="email" className="my-1">
                 Email Addrerss
@@ -122,7 +122,7 @@ const LoginPage: React.FC = () => {
               )}
             </div>
             <div className="form-group">
-              <Button type="submit" className="mt-4 w-90 align-items-center btn-block" disabled={loading}>
+              <Button type="submit" className="mt-4 w-100 btn-block" disabled={loading}>
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
