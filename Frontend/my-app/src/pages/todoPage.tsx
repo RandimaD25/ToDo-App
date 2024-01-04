@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import MyList from "../components/MyList";
+import MyList from "../components/myList";
 import React, { useEffect, useState } from "react";
 import { getItems } from "../services/getItems";
 import { createItems } from "../services/createItems";
@@ -12,13 +12,40 @@ interface CreateTodoItemsRequest {
   description: string;
 }
 
+// interface UserDetails {
+//   id: number;
+//   name: string;
+// }
+
 const TodoPage = () => {
   const [todoData, setTodoData] = useState<Array<TodoType>>([]);
+  // const [userName, setUserName] = useState<UserDetails | null>(null);
   const [newTask, setNewTask] = useState<CreateTodoItemsRequest>({
     description: "",
   });
 
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (!isAuthenticated()) {
+  //     navigate("/login");
+  //     return;
+  //   }
+  //   getItems().then((result) => {
+  //     console.log(result);
+  //     setTodoData(result);
+      
+  //   })
+  // });
+
+  // axiosInstance.get<UserDetails>('/getTodo/user')
+  // .then(response => {
+  //   setUserName(response.data);
+  // })
+  // .catch(error => {
+  //   console.error('Error', error);
+    
+  // })
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -83,6 +110,7 @@ const TodoPage = () => {
             My Todo List
           </h1>
           <div className="align-self-start">
+            {/* <p>{userName?.name}</p> */}
             <button className="btn btn-dark" onClick={userLogout}>
               Logout
             </button>
