@@ -1,5 +1,5 @@
-import express, { NextFunction } from "express";
-import { Request, Response } from "express";
+import express from "express";
+import { Request, NextFunction,Response } from "express";
 import { IError } from "../interfaces/error.interface";
 import { IRequestWithUser } from "../interfaces/userRequest.interface";
 const app = express();

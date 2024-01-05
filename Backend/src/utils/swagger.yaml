@@ -1,0 +1,231 @@
+openapi: 3.0.0
+info:
+    title: Todo App
+    description: This Todo App allows to create todos, and shows it in the UI fro relevant and user. User can delete the todos that he don't need and can click the done button when he completed a todo
+    version: 0.1.9
+
+servers:
+    - url: http://localhost:3001/api
+      description: Todo list is listening to requests on port 3001
+
+security:
+  - bearerAuth: []
+
+
+components:
+  securitySchemes:
+
+    bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+
+paths:
+    /register:
+          post:
+            summary: Register to the todo app
+            description: User can register to the todo app by entering the name, Email Address and the Password.
+            requestBody:
+              required: true
+              content:
+                application/json: 
+                  schema:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        emailAddress:
+                          type: string
+                          example: lakmadias@gmail.com
+                        password:
+                          type: string
+                          example: After 123
+
+            responses:
+              '200':
+                description: A json object of success, message, data object with userId, name, emailAddress, password and, token
+                content:
+                  application/json:
+                    schema: 
+                      type: object
+                      properties:
+                        success: 
+                          type: boolean
+                          example: true
+                        message:  
+                          type: string
+                          example: User registered successfully
+                        data:
+                          type: object
+                          properties:
+                            userId:
+                              type: integer
+                              example: 23
+                            name: 
+                              type: string
+                              example: Saman Ranathunga
+                            emailAddress: 
+                              type: string
+                              example: samanranthunga@gmail.com
+                            password:
+                              type: string
+                              example: After 123
+                        token: 
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2LCJ0aW1lIjoiRnJpIEphbiAwNSAyMDI0IDEwOjQ4OjI4IEdNVCswNTMwIChJbmRpYSBTdGFuZGFyZCBUaW1lKSIsImlhdCI6MTcwNDQzMTkwOH0.7xkkkObLUeELuOZQS40xJnPjfoQLCWswAzZMbBKm6do
+
+
+    /login:
+          post:
+            summary: Login to the todo app
+            description: User can login to the todo app by entering the Email Address and the Password.
+            requestBody:
+              required: true
+              content:
+                application/json: 
+                  schema:
+                      type: object
+                      properties:
+                        emailAddress:
+                          type: string
+                          example: lakmadias@gmail.com
+                        password:
+                          type: string
+                          example: After 123
+            
+            responses:
+              '200':
+                description: A json object of id, data, message, token
+                content:
+                  application/json:
+                    schema: 
+                      type: object
+                      properties:
+                        iD: 
+                          type: integer
+                          example: 26
+                        data:
+                          type: string
+                          example: lakmadias@gmail.com
+                        message:
+                          type: string
+                          example: LoggedIn successfully.
+                        token: 
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2LCJ0aW1lIjoiRnJpIEphbiAwNSAyMDI0IDEwOjQ4OjI4IEdNVCswNTMwIChJbmRpYSBTdGFuZGFyZCBUaW1lKSIsImlhdCI6MTcwNDQzMTkwOH0.7xkkkObLUeELuOZQS40xJnPjfoQLCWswAzZMbBKm6do
+
+    /createTodo:
+          post:
+            security:
+              - bearerAuth: []
+            summary: Create a todo for a relevant registered user.
+            description: User can register via app and after that can create a todo by clicking "Add" button. The created todo is stored in the database.
+            requestBody:
+                required: true
+                content: 
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                description:
+                                    type: string
+                                flag: 
+                                    type: boolean
+
+            responses:
+                '200':
+                    description: A JSON object of userId, todoId, description and flag wheather the relevant todo is completed or not.
+                    content:
+                        application/json:
+                            schema: 
+                                type: object
+                                properties:
+                                  todoId: 
+                                    type: integer
+                                    example: 23
+                                  description: 
+                                    type: string
+                                    example: "Start the JS Assignment"
+                                  flag:
+                                    type: boolean
+
+    /getTodo:
+          get:
+            security:
+              - bearerAuth: []
+            summary: Shows todo for a relevant logged user.
+            description: User can view the todos that he created.
+
+            responses:
+                '200':
+                    description: A JSON object of userId, todoId, description and flag wheather the relevant todo is completed or not.
+                    content:
+                        application/json:
+                            schema: 
+                                type: array
+                                properties:
+                                  id: 
+                                    type: integer
+                                    example: 3
+                                  description: 
+                                    type: string
+                                    example: "Start the JS Assignment"
+                                  flag:
+                                    type: boolean
+
+    /deleteTodo/{todoId}:
+          delete:
+            security:
+              - bearerAuth: []
+            summary: Delete a todo that user unwanted.
+            parameters:
+              - name: todoId
+                in: path
+                required: true
+                schema: 
+                  type: integer
+
+            description: User can delete a todo if he don't need to show his todo app.
+
+            responses:
+                '200':
+                    description: After deleting a todo shows a message that succesfully deleted.
+                    content:
+                        application/json:
+                            schema: 
+                                type: string
+                                example: Successfully deleted
+
+    /updateTodo/{todoId}:
+          put:
+            security:
+              - bearerAuth: []
+            summary: Click Done button after user completed a todo.
+            parameters:
+              - name: todoId
+                in: path
+                required: true
+                schema: 
+                  type: integer
+
+            description: User can update a by clicking Done button todo if he completed.
+
+            responses:
+                '200':
+                    description: After deleting a todo shows a message that succesfully updated.
+                    content:
+                        application/json:
+                            schema: 
+                                type: string
+                                example: Successfully updated
+                              
+
+    
+
+    
+
+
+                              
+                                    
+
+
