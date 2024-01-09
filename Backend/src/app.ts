@@ -1,18 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
-
 import todoRoute from "./routes/todoRoute";
 import authRoute from "./routes/authRoute";
-// import swaggerDocs from './utils/swagger';
-
-
 
 var cors = require('cors');
 const dotenv = require('dotenv');
 const app = express();
 
 dotenv.config();
-
-// const port: string | number = "3001" || process.env.PORT;
 
 const port = process.env.PORT || 3001;
 
@@ -30,5 +24,4 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.listen(port, () => {
   console.log(`Listening to requests on port ${port}`);
-  // swaggerDocs(app, port)
 });

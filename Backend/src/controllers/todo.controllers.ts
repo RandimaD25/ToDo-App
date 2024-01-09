@@ -20,7 +20,7 @@ export const createTodo = async function (req: Request, res: Response) {
     res.json(newTodo);
   } catch (error: unknown) {
     if ((error as IError).message) {
-      res.status(500).json({ error: (error as IError).message });
+      res.status(500).json({ error: (error as IError).message || 'An error occurred'});
     } else {
       throw error
     }
