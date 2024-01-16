@@ -14,7 +14,6 @@ interface CreateTodoItemsRequest {
 
 const TodoPage = () => {
   const [todoData, setTodoData] = useState<Array<TodoType>>([]);
-  // const [userName, setUserName] = useState<UserDetails | null>(null);
   const [newTask, setNewTask] = useState<CreateTodoItemsRequest>({
     description: "",
   });
@@ -71,13 +70,12 @@ const TodoPage = () => {
   };
 
   const userLogout = async () => {
-    await localStorage.removeItem("user");
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
   return (
-    <>
-      <div className="p-4 m-3 rounded" style={{ backgroundColor: "#DDF2FD" }}>
+    <div className="p-4 m-3 rounded" style={{ backgroundColor: "#DDF2FD" }}>
         <div className="d-flex justify-content-between">
           <div></div>{" "}
           <h1 className="text-primary m-auto" style={{ paddingBlock: "1rem" }}>
@@ -110,9 +108,9 @@ const TodoPage = () => {
         </form>
 
         <div className="justify-content-center">
-          {todoData.map((todo: TodoType, id: number) => (
+          {todoData.map((todo: TodoType) => (
             <MyList
-              key={id}
+              key={todo.id}
               todo={todo}
               onRemoveTodo={handleDelete}
               onDoneTodo={handleDone}
@@ -120,7 +118,6 @@ const TodoPage = () => {
           ))}
         </div>
       </div>
-    </>
   );
 };
 

@@ -1,9 +1,8 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import TodoPage from "../pages/todoPage";
 import { createItems } from "../services/createItems";
-import { getItems } from "../services/getItems";
-import { doneItems } from "../services/doneItems";
+
 
 jest.mock("../services/createItems");
 jest.mock("../services/getItems");
@@ -35,6 +34,5 @@ describe("Todo page", () => {
     fireEvent.click(addButton);
 
     expect(createItems).toHaveBeenCalledWith({ description: "Test todo" });
-    // await waitFor(() => expect(getItems).toHaveBeenCalled());
   });
 });

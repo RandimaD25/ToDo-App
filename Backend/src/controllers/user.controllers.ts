@@ -1,5 +1,4 @@
-import express from "express";
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { registerUser, loginUser } from "../services/user.service";
 import { IError } from "../interfaces/error.interface";
 

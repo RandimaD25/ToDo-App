@@ -49,13 +49,7 @@ const LoginPage: React.FC = () => {
           window.location.reload();
         },
         (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
+          const resMessage = error.response?.data?.message || error.message || error.toString();
           setLoading(false);
           setMessage(resMessage);
         }
@@ -66,11 +60,10 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="d-flex  align-items-center justify-content-center">
+    <div className="d-flex  align-items-center justify-content-center">
         <img
           src={loginImage}
-          alt="login-image"
+          alt="login-wallpaper"
           className="col-md-6 img-fluid"
         />
         <div className="d-flex flex-column bg-light p-4 rounded justify-content-center align-items-center">
@@ -138,7 +131,6 @@ const LoginPage: React.FC = () => {
           </form>
         </div>
       </div>
-    </>
   );
 };
 

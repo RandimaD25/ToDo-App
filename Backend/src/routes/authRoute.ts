@@ -7,7 +7,18 @@ import {
 const router = express.Router();
 
 //routes
-router.post('/register', userRegistration);
-router.post('/login', userLogin);
+router.post('/register', (req, res) => {
+    userRegistration(req, res).catch(err => {
+        console.error(err);
+        res.status(500).send('An error occured.')
+    })
+} );
+
+router.post('/login', (req, res) => {
+    userLogin(req, res).catch(err => {
+        console.error(err);
+        res.status(500).send('An error occured.')
+    })
+} );
 
 export default router;
