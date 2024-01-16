@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MyList component Snapshot should matches DOM Snapshot 1`] = `
+<ul
+  data-testid="todo-1"
+  id="list"
+>
+  <li
+    className="align-items-left"
+    style={
+      {
+        "marginInline": "15rem",
+      }
+    }
+  >
+    <div
+      className="d-flex mt-4 gap-4"
+      style={
+        {
+          "display": "flex",
+          "justifyContent": "space-between",
+        }
+      }
+    >
+      Test Todo
+      <div
+        className="d-flex gap-4 align-items-right"
+      >
+        <button
+          className="btn btn-success btn btn-primary"
+          disabled={false}
+          hidden={false}
+          onClick={[Function]}
+          type="button"
+        >
+          Done
+        </button>
+        <button
+          className="btn btn-danger btn btn-primary"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </li>
+</ul>
+`;

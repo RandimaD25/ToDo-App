@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -19,7 +19,7 @@ export const createTodoService = async (description: string, userId: number) => 
     return newTodo;
   } catch (error) {
     console.log(error);
-    throw new Error("Internal server error");
+    throw error;
   }
 };
 
@@ -72,7 +72,7 @@ export const updateTodoService = async (todoId: number, userId: number) => {
 //delete a todo
 export const deleteTodoService = async (todoID: number, userId: number) => {
   try {
-    const deleteTodo = await prisma.todo.delete({
+    await prisma.todo.delete({
       where: {
         id: todoID,
         userId: userId

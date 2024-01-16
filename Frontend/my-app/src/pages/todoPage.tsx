@@ -12,11 +12,6 @@ interface CreateTodoItemsRequest {
   description: string;
 }
 
-// interface UserDetails {
-//   id: number;
-//   name: string;
-// }
-
 const TodoPage = () => {
   const [todoData, setTodoData] = useState<Array<TodoType>>([]);
   // const [userName, setUserName] = useState<UserDetails | null>(null);
@@ -25,27 +20,6 @@ const TodoPage = () => {
   });
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (!isAuthenticated()) {
-  //     navigate("/login");
-  //     return;
-  //   }
-  //   getItems().then((result) => {
-  //     console.log(result);
-  //     setTodoData(result);
-      
-  //   })
-  // });
-
-  // axiosInstance.get<UserDetails>('/getTodo/user')
-  // .then(response => {
-  //   setUserName(response.data);
-  // })
-  // .catch(error => {
-  //   console.error('Error', error);
-    
-  // })
 
   useEffect(() => {
     if (!isAuthenticated()) {

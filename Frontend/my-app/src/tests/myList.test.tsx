@@ -1,23 +1,87 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import MyList from "../components/myList";
+import renderer from "react-test-renderer";
 
-test('MyList component render correctly', () => {
-    const mockTodo = {
-        id: 1,
-        description: 'Test todo',
-        flag: false
+describe("MyList component", () => {
+  test("render the MyList component", () => {
+    const mockOnRemoveTodo = jest.fn();
+    const mockOnDoneTodo = jest.fn();
+
+    const todo = {
+      id: 1,
+      description: "Test Todo",
+      flag: false,
     };
 
-    const mockRemoveTodo = (id: number) => {
-        console.log(`Remove todo with id ${id}`);
-    };
+    const { getByText } = render(
+      <MyList
+        todo={todo}
+        onRemoveTodo={mockOnRemoveTodo}
+        onDoneTodo={mockOnDoneTodo}
+      />
+    );
 
-    const mockDoneTodo = (id: number) => {
-        console.log(`Done todo with id ${id}`);
-    };
+    fireEvent.click(getByText("Done"));
+    expect(mockOnDoneTodo).toHaveBeenCalledWith(todo.id);
 
-    render(<MyList todo={mockTodo} onRemoveTodo={mockRemoveTodo} onDoneTodo={mockDoneTodo} />)
-    const todoElement = screen.getByTestId('todo-1');
-    expect(todoElement).toBeInTheDocument();
+    fireEvent.click(getByText("Delete"));
+    expect(mockOnRemoveTodo).toHaveBeenCalledWith(todo.id);
+  });  
+
+  test("should call onDoneTodo when the done button is clicked", () => {
+    const todo = { id: 1, description: 'Test todo', flag: false };
+    const onRemoveTodo = jest.fn();
+    const onDoneTodo = jest.fn();
+
+    const { getByText } = render(
+      <MyList todo={todo} onRemoveTodo={onRemoveTodo} onDoneTodo={onDoneTodo} />
+    );
+    const doneButton = getByText('Done');
+    fireEvent.click(doneButton);
+
+    expect(onDoneTodo).toHaveBeenCalledWith(todo.id);
+  });
+
+  test("calls onRemoveTodo when the delete button is clicked", () => {
+    const mockTodo = { id:1, description: 'Test todo', flag: false };
+    const mockOnRemoveTodo = jest.fn();
+    const mockOnDoneTodo = jest.fn();
+
+    const { getByText } = render(
+      <MyList
+        todo={mockTodo}
+        onRemoveTodo={mockOnRemoveTodo}
+        onDoneTodo={mockOnDoneTodo}
+      />
+    );
+    const deleteButton = getByText('Delete');
+    fireEvent.click(deleteButton);
+
+    expect(mockOnRemoveTodo).toHaveBeenCalledWith(mockTodo.id);
+  })
 });
 
+describe("MyList component Snapshot", ()=> {
+  test("should matches DOM Snapshot", () => {
+    const todo = {
+      id: 1,
+      description: "Test Todo",
+      flag: false,
+    };
+
+    const onRemoveTodo = jest.fn();
+    const onDoneTodo = jest.fn();
+
+    const tree = renderer
+      .create(
+        <MyList
+          todo={todo}
+          onRemoveTodo={onRemoveTodo}
+          onDoneTodo={onDoneTodo}
+        />
+      )
+      .toJSON();
+
+    expect(tree).toMatchSnapshot();
+  });
+})

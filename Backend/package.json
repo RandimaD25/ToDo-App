@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "start": "nodemon --watch src --ext ts --exec ts-node src/app.ts"
   },
   "author": "",
