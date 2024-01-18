@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1705488187226" clover="3.2.0">
-  <project timestamp="1705488187226" name="All files">
-    <metrics statements="125" coveredstatements="98" conditionals="28" coveredconditionals="12" methods="17" coveredmethods="16" elements="170" coveredelements="126" complexity="0" loc="125" ncloc="125" packages="2" files="4" classes="4"/>
+<coverage generated="1705547163548" clover="3.2.0">
+  <project timestamp="1705547163548" name="All files">
+    <metrics statements="125" coveredstatements="102" conditionals="28" coveredconditionals="12" methods="17" coveredmethods="17" elements="170" coveredelements="131" complexity="0" loc="125" ncloc="125" packages="2" files="4" classes="4"/>
     <package name="controllers">
       <metrics statements="57" coveredstatements="47" conditionals="14" coveredconditionals="5" methods="6" coveredmethods="6"/>
       <file name="todo.controllers.ts" path="D:\Assignments\Todo-App-2.0\my-todo-list-app\Backend\src\controllers\todo.controllers.ts">
@@ -69,7 +69,7 @@
       </file>
     </package>
     <package name="services">
-      <metrics statements="68" coveredstatements="51" conditionals="14" coveredconditionals="7" methods="11" coveredmethods="10"/>
+      <metrics statements="68" coveredstatements="55" conditionals="14" coveredconditionals="7" methods="11" coveredmethods="11"/>
       <file name="todo.service.ts" path="D:\Assignments\Todo-App-2.0\my-todo-list-app\Backend\src\services\todo.service.ts">
         <metrics statements="37" coveredstatements="29" conditionals="4" coveredconditionals="2" methods="8" coveredmethods="8"/>
         <line num="1" count="2" type="stmt"/>
@@ -111,16 +111,16 @@
         <line num="89" count="1" type="stmt"/>
       </file>
       <file name="user.service.ts" path="D:\Assignments\Todo-App-2.0\my-todo-list-app\Backend\src\services\user.service.ts">
-        <metrics statements="31" coveredstatements="22" conditionals="10" coveredconditionals="5" methods="3" coveredmethods="2"/>
+        <metrics statements="31" coveredstatements="26" conditionals="10" coveredconditionals="5" methods="3" coveredmethods="3"/>
         <line num="1" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
         <line num="5" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
         <line num="18" count="2" type="stmt"/>
         <line num="19" count="1" type="stmt"/>
         <line num="20" count="1" type="stmt"/>

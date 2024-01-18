@@ -49,3 +49,20 @@ describe("user service", () => {
       });
 });
 
+const jwt = require('jsonwebtoken');
+const { generateToken } = require('../services/user.service'); 
+
+describe('generateToken', () => {
+  test('should generate a valid token', () => {
+    const mockUserId = 1;
+    const mockSecretKey = 'gfg_jwt_secret_key'; 
+    process.env.JWT_SECRET_KEY = mockSecretKey;
+
+    const token = generateToken(mockUserId);
+    const decoded = jwt.verify(token, mockSecretKey);
+
+    expect(decoded.userId).toEqual(mockUserId);
+    expect(new Date(decoded.time)).toBeInstanceOf(Date);
+  });
+});
+
