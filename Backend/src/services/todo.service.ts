@@ -59,10 +59,10 @@ export const updateTodoService = async (todoId: number, userId: number) => {
     return "Successfully updated";
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code = "P2025") {
+        if (error.code === "P2025") {
           console.log("Record to update does not exist");
           
-          throw new Error("Record to delete does not exist.")
+          throw new Error("Record to update does not exist.")
         }
       }
       throw error;
